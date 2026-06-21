@@ -1,5 +1,5 @@
 $root = Split-Path -Parent $PSScriptRoot
-$mod  = Join-Path $root 'cmake\XdkXex.cmake'
+$mod  = Join-Path $root 'cmake/XdkXex.cmake'
 
 Test-Case 'XdkXex.cmake exists' { Assert-True (Test-Path $mod) }
 Test-Case 'defines add_xex function' {

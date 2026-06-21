@@ -1,4 +1,4 @@
-Import-Module (Join-Path (Split-Path -Parent $PSScriptRoot) 'Wizard\XexScaffold.psm1') -Force
+Import-Module (Join-Path (Split-Path -Parent $PSScriptRoot) 'Wizard/XexScaffold.psm1') -Force
 
 Test-Case 'Expand-XexTemplate substitutes tokens' {
     $out = Expand-XexTemplate -Text 'name=@PROJECT_NAME@;type=@XEX_TYPE@' -Tokens @{ PROJECT_NAME='Foo'; XEX_TYPE='DLL' }
