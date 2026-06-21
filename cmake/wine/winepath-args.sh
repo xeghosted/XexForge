@@ -25,10 +25,7 @@ translate_one() {
             if [ -e "$a" ]; then to_win_path "$a"; else printf '%s' "$a"; fi ;;
         *)
             if [ -e "$a" ] || case "$a" in */*) true ;; *) false ;; esac; then
-                case "$a" in
-                    /*) to_win_path "$a" ;;
-                    *)  to_win_path "/$a" ;;
-                esac
+                to_win_path "$a"
             else
                 printf '%s' "$a"
             fi ;;

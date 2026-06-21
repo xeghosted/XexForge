@@ -21,6 +21,6 @@ check "/IMPLIB path"        "/IMPLIB:Z:\\b\\x.lib" "$(translate_one /IMPLIB:/b/x
 # XexForge imagexex flags:
 check "/IN path"            "/IN:Z:\\b\\x.exe"    "$(translate_one /IN:/b/x.exe)"
 check "/CONFIG path"        "/CONFIG:Z:\\a.xml"   "$(translate_one /CONFIG:/a.xml)"
-check "bare src"            "Z:\\s\\a.cpp"        "$(translate_one s/a.cpp)"
+check "bare src"            "Z:s\\a.cpp"          "$(translate_one s/a.cpp)"
 check "bare lib name"       "xboxkrnl.lib"        "$(translate_one xboxkrnl.lib)"
 exit $fail
