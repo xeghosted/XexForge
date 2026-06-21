@@ -1,24 +1,28 @@
 Set-StrictMode -Version Latest
 
+# 'Unix' on Linux/macOS; under Windows PowerShell 5.1 Platform is absent ($null
+# -ne 'Unix' -> Windows). Avoids bare $IsWindows (undefined on 5.1 + StrictMode).
+$script:OnWindows = ($PSVersionTable.Platform -ne 'Unix')
+
 function Find-Xdk {
     [CmdletBinding()] param([string]$Override)
-    # If Override is provided, ONLY check that path (don't fall through to defaults)
     if ($Override) {
-        if (Test-Path (Join-Path $Override 'bin\win32\imagexex.exe')) { return $Override }
+        if (Test-Path (Join-Path $Override 'bin/win32/imagexex.exe')) { return $Override }
         return $null
     }
-    # Otherwise, check env var and default path
     if ($env:XEDK) {
-        if (Test-Path (Join-Path $env:XEDK 'bin\win32\imagexex.exe')) { return $env:XEDK }
+        if (Test-Path (Join-Path $env:XEDK 'bin/win32/imagexex.exe')) { return $env:XEDK }
     }
-    $default = 'C:\Program Files (x86)\Microsoft Xbox 360 SDK'
-    if (Test-Path (Join-Path $default 'bin\win32\imagexex.exe')) { return $default }
+    if ($script:OnWindows) {
+        $default = 'C:/Program Files (x86)/Microsoft Xbox 360 SDK'
+        if (Test-Path (Join-Path $default 'bin/win32/imagexex.exe')) { return $default }
+    }
     return $null
 }
 
 function Test-XdkTools {
     [CmdletBinding()] param([Parameter(Mandatory)][string]$XdkRoot)
-    $bin = Join-Path $XdkRoot 'bin\win32'
+    $bin = Join-Path $XdkRoot 'bin/win32'
     [pscustomobject]@{
         Cl       = Test-Path (Join-Path $bin 'cl.exe')
         Link     = Test-Path (Join-Path $bin 'link.exe')
@@ -27,6 +31,7 @@ function Test-XdkTools {
 }
 
 function Find-BundledNinja {
+    if (-not $script:OnWindows) { return $null }
     $candidates = [System.Collections.Generic.List[string]]::new()
 
     # Try vswhere first (fast, authoritative)
@@ -145,11 +150,13 @@ function New-XexProject {
         GENERATOR     = $Generator
     }
 
-    $makeProg = Get-MakeProgram -Generator $Generator
     $mpBlock = ''
-    if ($makeProg) {
-        $mp = ($makeProg -replace '\\','/')
-        $mpBlock = ",`r`n      ""cacheVariables"": {`r`n        ""CMAKE_MAKE_PROGRAM"": ""$mp""`r`n      }"
+    if ($script:OnWindows) {
+        $makeProg = Get-MakeProgram -Generator $Generator
+        if ($makeProg) {
+            $mp = ($makeProg -replace '\\','/')
+            $mpBlock = ",`n      ""cacheVariables"": {`n        ""CMAKE_MAKE_PROGRAM"": ""$mp""`n      }"
+        }
     }
     $tokens['MAKE_PROGRAM_BLOCK'] = $mpBlock
 

@@ -1,8 +1,8 @@
-Import-Module (Join-Path (Split-Path -Parent $PSScriptRoot) 'Wizard\XexScaffold.psm1') -Force
+Import-Module (Join-Path (Split-Path -Parent $PSScriptRoot) 'Wizard/XexScaffold.psm1') -Force
 
 # Build a fake XDK in a temp dir so Find-Xdk/Test-XdkTools are deterministic.
-$fake = Join-Path $env:TEMP ("fakexdk_" + [guid]::NewGuid().ToString('N'))
-$bin  = Join-Path $fake 'bin\win32'
+$fake = Join-Path ([System.IO.Path]::GetTempPath()) ("fakexdk_" + [guid]::NewGuid().ToString('N'))
+$bin  = Join-Path $fake 'bin/win32'
 New-Item -ItemType Directory -Force -Path $bin | Out-Null
 foreach ($t in 'cl.exe','link.exe','imagexex.exe') { Set-Content -Path (Join-Path $bin $t) -Value '' }
 
@@ -10,7 +10,7 @@ Test-Case 'Find-Xdk honours -Override when tools present' {
     Assert-Equal $fake (Find-Xdk -Override $fake)
 }
 Test-Case 'Find-Xdk returns null for a dir without imagexex' {
-    $empty = Join-Path $env:TEMP ("empty_" + [guid]::NewGuid().ToString('N'))
+    $empty = Join-Path ([System.IO.Path]::GetTempPath()) ("empty_" + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Force -Path $empty | Out-Null
     Assert-True ($null -eq (Find-Xdk -Override $empty))
 }

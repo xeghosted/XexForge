@@ -1,5 +1,5 @@
 $root = Split-Path -Parent $PSScriptRoot
-$tc   = Join-Path $root 'cmake\XdkXenon.toolchain.cmake'
+$tc   = Join-Path $root 'cmake/XdkXenon.toolchain.cmake'
 
 Test-Case 'toolchain file exists' { Assert-True (Test-Path $tc) }
 Test-Case 'toolchain sets Generic system + ppc processor' {
@@ -17,7 +17,7 @@ Test-Case 'toolchain carries the proven compile flags' {
 Test-Case 'shared-library (DLL) support lives in XdkXex (runs after project())' {
     # Generic forces TARGET_SUPPORTS_SHARED_LIBS FALSE *after* the toolchain runs,
     # so the MSVC conventions + link rules must live in XdkXex.cmake (post-project()).
-    $xex = Get-Content -Raw (Join-Path $root 'cmake\XdkXex.cmake')
+    $xex = Get-Content -Raw (Join-Path $root 'cmake/XdkXex.cmake')
     Assert-True ($xex -match 'TARGET_SUPPORTS_SHARED_LIBS' -and $xex -match 'CMAKE_CXX_CREATE_SHARED_LIBRARY' -and $xex -match '\.dll')
 }
 Test-Case 'toolchain does NOT redundantly set clobbered shared-lib conventions' {
@@ -30,7 +30,7 @@ Test-Case 'toolchain is host-aware (Wine wrappers on non-Windows)' {
     Assert-True ($t -match 'CMAKE_HOST_WIN32' -and $t -match 'cl-wine' -and $t -match 'ntlm_auth')
 }
 Test-Case 'verify-xex.cmake exists and add_xex invokes it' {
-    Assert-True (Test-Path (Join-Path $root 'cmake\verify-xex.cmake'))
-    $xex = Get-Content -Raw (Join-Path $root 'cmake\XdkXex.cmake')
+    Assert-True (Test-Path (Join-Path $root 'cmake/verify-xex.cmake'))
+    $xex = Get-Content -Raw (Join-Path $root 'cmake/XdkXex.cmake')
     Assert-True ($xex -match 'verify-xex\.cmake')
 }
