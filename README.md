@@ -69,8 +69,10 @@ Set `XEXWINE_WRAP_DEBUG=1` to see the translated Wine command lines.
 
 Project generation (`New-XexProject`) also runs on Linux under PowerShell Core.
 
+Install PowerShell Core (`pwsh`) first — see Microsoft's [Installing PowerShell on Linux](https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-linux) (it needs the Microsoft package repo; the exact steps vary by distro).
+
 ```sh
-sudo apt install powershell        # provides pwsh
+# (PowerShell Core / pwsh installed per the link above)
 pwsh -NoProfile -Command "Import-Module ./Wizard/XexScaffold.psm1; \
   New-XexProject -Name MyPlugin -Type DLL -TargetDir . -ToolkitRoot . -Generator Ninja"
 cd MyPlugin
