@@ -69,6 +69,8 @@ function(add_xex target)
         target_link_options(${target} PRIVATE "/DLL" "/ENTRY:${XEX_ENTRY}")
     elseif(XEX_TYPE STREQUAL "EXE")
         add_executable(${target} ${XEX_SOURCES})
+        # A title XEX must declare the XBOX subsystem (correct on both hosts).
+        target_link_options(${target} PRIVATE "/SUBSYSTEM:XBOX")
     else()
         message(FATAL_ERROR "add_xex(${target}): unknown TYPE '${XEX_TYPE}'")
     endif()
@@ -98,7 +100,10 @@ function(add_xex target)
     set(_xex "${CMAKE_BINARY_DIR}/${target}.xex")
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${XDK_IMAGEXEX}" /IN:$<TARGET_FILE:${target}> /OUT:${_xex} /CONFIG:${XEX_CONFIG}
+        COMMAND "${CMAKE_COMMAND}" -DXEX=${_xex} -DXEX_TYPE=${XEX_TYPE}
+                -DXDK_IMAGEXEX=${XDK_IMAGEXEX}
+                -P "${CMAKE_CURRENT_LIST_DIR}/verify-xex.cmake"
         BYPRODUCTS "${_xex}"
-        COMMENT "imagexex -> ${target}.xex"
+        COMMENT "imagexex + verify -> ${target}.xex"
         VERBATIM)
 endfunction()
