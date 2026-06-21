@@ -65,6 +65,24 @@ cmake --build --preset xdk-wine     # -> build/<name>.xex (verified)
 
 Set `XEXWINE_WRAP_DEBUG=1` to see the translated Wine command lines.
 
+### Generate a project on Linux
+
+Project generation (`New-XexProject`) also runs on Linux under PowerShell Core.
+
+```sh
+sudo apt install powershell        # provides pwsh
+pwsh -NoProfile -Command "Import-Module ./Wizard/XexScaffold.psm1; \
+  New-XexProject -Name MyPlugin -Type DLL -TargetDir . -ToolkitRoot . -Generator Ninja"
+cd MyPlugin
+export XEDK=/path/to/your/'Microsoft Xbox 360 SDK'
+cmake --preset xdk-wine
+cmake --build --preset xdk-wine    # -> build/MyPlugin.xex (verified)
+```
+
+The generated project carries its own `cmake/` (toolchain + Wine wrappers +
+`verify-xex`), so it builds the same way on Windows (`--preset xdk`) and Linux
+(`--preset xdk-wine`). The WinForms wizard remains Windows-only.
+
 ## Building a generated project (no wizard)
 
 ```sh
