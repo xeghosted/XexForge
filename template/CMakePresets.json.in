@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "xdk",
+      "displayName": "Xbox 360 (XDK)",
+      "generator": "@GENERATOR@",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/cmake/XdkXenon.toolchain.cmake"@MAKE_PROGRAM_BLOCK@
+    }
+  ],
+  "buildPresets": [
+    { "name": "xdk", "configurePreset": "xdk" }
+  ]
+}

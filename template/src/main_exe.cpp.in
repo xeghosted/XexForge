@@ -1,0 +1,6 @@
+#include <xtl.h>
+// Generated XEX-EXE title (minimal).
+int main() {
+    OutputDebugStringA("[@PROJECT_NAME@] hello from a generated XEX-EXE\n");
+    return 0;
+}

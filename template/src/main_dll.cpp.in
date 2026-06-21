@@ -1,0 +1,14 @@
+#include <xtl.h>
+// Generated XEX-DLL plugin. OutputDebugStringA needs no xkelib; if you enabled
+// xkelib, <xstd/xke.h> / <xkelib.h> give you DbgPrint and the kernel/xam API.
+static DWORD WINAPI Worker(LPVOID) {
+    OutputDebugStringA("[@PROJECT_NAME@] hello from a generated XEX-DLL\n");
+    return 0;
+}
+
+BOOL APIENTRY DllMain(HMODULE, DWORD reason, LPVOID) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        CreateThread(NULL, 0, Worker, NULL, 0, NULL);
+    }
+    return TRUE;
+}

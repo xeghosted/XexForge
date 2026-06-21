@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.21)
+project(@PROJECT_NAME@ CXX)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(XdkXex)
+
+add_xex(@PROJECT_NAME@
+    TYPE       @XEX_TYPE@
+    SOURCES    src/main.cpp@ENTRY_SOURCES@
+    ENTRY      @ENTRY_SYMBOL@
+    CONFIG     "${CMAKE_SOURCE_DIR}/Application.xml"
+    USE_XKELIB @USE_XKELIB@
+    XKELIB_DIR "@XKELIB_DIR@"
+)

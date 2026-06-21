@@ -1,0 +1,21 @@
+# Agent / working scratch
+.reports/
+
+# CMake build output (in case a project is generated/built inside the repo)
+build/
+**/build/
+CMakeCache.txt
+CMakeFiles/
+*.xex
+*.dll
+*.lib
+*.exp
+*.pdb
+*.obj
+*.pe
+
+# Visual Studio / OS junk
+.vs/
+*.user
+Thumbs.db
+desktop.ini

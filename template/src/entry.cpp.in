@@ -1,0 +1,21 @@
+// XEX entry-point wrapper; name must match /ENTRY: in the link step.
+#include <xtl.h>
+
+extern "C" {
+    BOOL WINAPI _CRT_INIT(HINSTANCE hDll, DWORD reason, LPVOID reserved);
+    BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID reserved);
+}
+
+extern "C" BOOL WINAPI @ENTRY_SYMBOL@(HINSTANCE hDll, DWORD reason, LPVOID reserved) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        if (!_CRT_INIT(hDll, reason, reserved)) return FALSE;
+        return DllMain((HMODULE)hDll, reason, reserved);
+    }
+    if (reason == DLL_PROCESS_DETACH) {
+        BOOL dm = DllMain((HMODULE)hDll, reason, reserved);
+        _CRT_INIT(hDll, reason, reserved);
+        return dm;
+    }
+    _CRT_INIT(hDll, reason, reserved);
+    return DllMain((HMODULE)hDll, reason, reserved);
+}
