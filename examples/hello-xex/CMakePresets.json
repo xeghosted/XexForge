@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "xdk-wine",
+      "displayName": "Xbox 360 (XDK under Wine)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/../../cmake/XdkXenon.toolchain.cmake"
+    }
+  ],
+  "buildPresets": [ { "name": "xdk-wine", "configurePreset": "xdk-wine" } ]
+}

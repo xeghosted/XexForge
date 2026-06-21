@@ -47,6 +47,10 @@ set(CMAKE_CXX_CREATE_SHARED_LIBRARY
 set(CMAKE_CXX_LINK_EXECUTABLE
     "<CMAKE_LINKER> /nologo /LTCG <LINK_FLAGS> <OBJECTS> /OUT:<TARGET> <LINK_LIBRARIES>")
 
+# Capture this module's directory now (before function() changes CMAKE_CURRENT_LIST_DIR
+# to the caller's directory at invocation time). Used by add_xex to locate verify-xex.cmake.
+set(_XDKXEX_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "XdkXex.cmake directory")
+
 # add_xex(target TYPE <DLL|EXE> SOURCES ... [ENTRY sym] CONFIG xml
 #         [USE_XKELIB ON|OFF] [XKELIB_DIR dir])
 # Builds the PE target and packages it into <target>.xex via imagexex.
@@ -80,7 +84,13 @@ function(add_xex target)
     # an already-XEX file and emits a broken double-wrapped image that crashes on
     # load (image not rebased to its load address, not compressed).
     # /FIXED:NO keeps the .reloc table so imagexex can rebase to the load address.
-    target_link_options(${target} PRIVATE "/ALIGN:128,4096" "/FIXED:NO" "/XEX:NO")
+    # /ALIGN:128,4096 (section:file) compacts DLL plugins; EXE titles omit it —
+    # imagexex IM1038 fires when the PE section alignment is below the 64K XEX
+    # base-address granularity required for title images.
+    if(XEX_TYPE STREQUAL "DLL")
+        target_link_options(${target} PRIVATE "/ALIGN:128,4096")
+    endif()
+    target_link_options(${target} PRIVATE "/FIXED:NO" "/XEX:NO")
 
     if(XEX_USE_XKELIB STREQUAL "ON")
         if(NOT XEX_XKELIB_DIR)
@@ -102,7 +112,7 @@ function(add_xex target)
         COMMAND "${XDK_IMAGEXEX}" /IN:$<TARGET_FILE:${target}> /OUT:${_xex} /CONFIG:${XEX_CONFIG}
         COMMAND "${CMAKE_COMMAND}" -DXEX=${_xex} -DXEX_TYPE=${XEX_TYPE}
                 -DXDK_IMAGEXEX=${XDK_IMAGEXEX}
-                -P "${CMAKE_CURRENT_LIST_DIR}/verify-xex.cmake"
+                -P "${_XDKXEX_MODULE_DIR}/verify-xex.cmake"
         BYPRODUCTS "${_xex}"
         COMMENT "imagexex + verify -> ${target}.xex"
         VERBATIM)
