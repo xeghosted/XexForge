@@ -25,3 +25,12 @@ Test-Case 'toolchain does NOT redundantly set clobbered shared-lib conventions' 
     $t = Get-Content -Raw $tc
     Assert-True (-not ($t -match 'CMAKE_CXX_CREATE_SHARED_LIBRARY'))
 }
+Test-Case 'toolchain is host-aware (Wine wrappers on non-Windows)' {
+    $t = Get-Content -Raw $tc
+    Assert-True ($t -match 'CMAKE_HOST_WIN32' -and $t -match 'cl-wine' -and $t -match 'ntlm_auth')
+}
+Test-Case 'verify-xex.cmake exists and add_xex invokes it' {
+    Assert-True (Test-Path (Join-Path $root 'cmake\verify-xex.cmake'))
+    $xex = Get-Content -Raw (Join-Path $root 'cmake\XdkXex.cmake')
+    Assert-True ($xex -match 'verify-xex\.cmake')
+}

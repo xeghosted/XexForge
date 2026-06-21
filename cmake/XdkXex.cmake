@@ -47,6 +47,10 @@ set(CMAKE_CXX_CREATE_SHARED_LIBRARY
 set(CMAKE_CXX_LINK_EXECUTABLE
     "<CMAKE_LINKER> /nologo /LTCG <LINK_FLAGS> <OBJECTS> /OUT:<TARGET> <LINK_LIBRARIES>")
 
+# Capture this module's directory now (before function() changes CMAKE_CURRENT_LIST_DIR
+# to the caller's directory at invocation time). Used by add_xex to locate verify-xex.cmake.
+set(_XDKXEX_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "XdkXex.cmake directory")
+
 # add_xex(target TYPE <DLL|EXE> SOURCES ... [ENTRY sym] CONFIG xml
 #         [USE_XKELIB ON|OFF] [XKELIB_DIR dir])
 # Builds the PE target and packages it into <target>.xex via imagexex.
@@ -69,6 +73,8 @@ function(add_xex target)
         target_link_options(${target} PRIVATE "/DLL" "/ENTRY:${XEX_ENTRY}")
     elseif(XEX_TYPE STREQUAL "EXE")
         add_executable(${target} ${XEX_SOURCES})
+        # A title XEX must declare the XBOX subsystem (correct on both hosts).
+        target_link_options(${target} PRIVATE "/SUBSYSTEM:XBOX")
     else()
         message(FATAL_ERROR "add_xex(${target}): unknown TYPE '${XEX_TYPE}'")
     endif()
@@ -78,7 +84,13 @@ function(add_xex target)
     # an already-XEX file and emits a broken double-wrapped image that crashes on
     # load (image not rebased to its load address, not compressed).
     # /FIXED:NO keeps the .reloc table so imagexex can rebase to the load address.
-    target_link_options(${target} PRIVATE "/ALIGN:128,4096" "/FIXED:NO" "/XEX:NO")
+    # /ALIGN:128,4096 (section:file) compacts DLL plugins; EXE titles omit it —
+    # imagexex IM1038 fires when the PE section alignment is below the 64K XEX
+    # base-address granularity required for title images.
+    if(XEX_TYPE STREQUAL "DLL")
+        target_link_options(${target} PRIVATE "/ALIGN:128,4096")
+    endif()
+    target_link_options(${target} PRIVATE "/FIXED:NO" "/XEX:NO")
 
     if(XEX_USE_XKELIB STREQUAL "ON")
         if(NOT XEX_XKELIB_DIR)
@@ -98,7 +110,10 @@ function(add_xex target)
     set(_xex "${CMAKE_BINARY_DIR}/${target}.xex")
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${XDK_IMAGEXEX}" /IN:$<TARGET_FILE:${target}> /OUT:${_xex} /CONFIG:${XEX_CONFIG}
+        COMMAND "${CMAKE_COMMAND}" -DXEX=${_xex} -DXEX_TYPE=${XEX_TYPE}
+                -DXDK_IMAGEXEX=${XDK_IMAGEXEX}
+                -P "${_XDKXEX_MODULE_DIR}/verify-xex.cmake"
         BYPRODUCTS "${_xex}"
-        COMMENT "imagexex -> ${target}.xex"
+        COMMENT "imagexex + verify -> ${target}.xex"
         VERBATIM)
 endfunction()

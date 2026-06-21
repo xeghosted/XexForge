@@ -49,3 +49,10 @@ Test-Case 'CMakePresets.json is valid JSON and embeds CMAKE_MAKE_PROGRAM when re
     if (Get-MakeProgram -Generator 'Ninja') { Assert-True ($json -match 'CMAKE_MAKE_PROGRAM') }
     Remove-Item -Recurse -Force $out
 }
+Test-Case 'generated project carries the Wine wrappers and verifier' {
+    $out = New-TempDir
+    $r = New-XexProject -Name 'ScfWine' -Type 'DLL' -TargetDir $out -ToolkitRoot $root -Generator 'Ninja'
+    Assert-True (Test-Path (Join-Path $r.ProjectDir 'cmake\wine\cl-wine'))
+    Assert-True (Test-Path (Join-Path $r.ProjectDir 'cmake\verify-xex.cmake'))
+    Remove-Item -Recurse -Force $out
+}

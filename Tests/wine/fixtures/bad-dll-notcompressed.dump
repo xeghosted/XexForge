@@ -1,0 +1,7 @@
+          A module flags
+              DLL module
+   90A00000 load address
+   90A00000 image base address
+   98000000 original base address
+   90A02000 entry point
+   NOT-COMPRESSED, ENCRYPTED

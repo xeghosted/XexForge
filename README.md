@@ -41,6 +41,30 @@ the generated project then builds from any terminal.
 
 The `.xex` lands in `build\<ProjectName>.xex`.
 
+## Linux / Wine
+
+XexForge builds the same project on Linux (incl. WSL) using the XDK tools under
+Wine — the `cmake/` layer is host-aware.
+
+Prerequisites:
+- Wine able to run the 32-bit XDK tools (modern wow64 Wine in its default prefix;
+  do **not** set `WINEARCH=win32`).
+- `ntlm_auth` — `sudo apt install winbind`. **Mandatory:** the XDK `link.exe`
+  authenticates to `mspdbsrv` over NTLM; without it you get a misleading
+  `LNK1101: incorrect MSPDB100.DLL version`.
+- `cmake` and `ninja` (`sudo apt install cmake ninja-build`).
+- A copy of the XDK; set `XEDK` to its path (e.g. on WSL,
+  `export XEDK="/mnt/c/Program Files (x86)/Microsoft Xbox 360 SDK"`).
+
+Build a generated project on Linux:
+
+```sh
+cmake --preset xdk-wine
+cmake --build --preset xdk-wine     # -> build/<name>.xex (verified)
+```
+
+Set `XEXWINE_WRAP_DEBUG=1` to see the translated Wine command lines.
+
 ## Building a generated project (no wizard)
 
 ```sh

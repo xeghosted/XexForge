@@ -4,13 +4,21 @@
   "configurePresets": [
     {
       "name": "xdk",
-      "displayName": "Xbox 360 (XDK)",
+      "displayName": "Xbox 360 (XDK, Windows)",
       "generator": "@GENERATOR@",
       "binaryDir": "${sourceDir}/build",
       "toolchainFile": "${sourceDir}/cmake/XdkXenon.toolchain.cmake"@MAKE_PROGRAM_BLOCK@
+    },
+    {
+      "name": "xdk-wine",
+      "displayName": "Xbox 360 (XDK under Wine, Linux)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/cmake/XdkXenon.toolchain.cmake"
     }
   ],
   "buildPresets": [
-    { "name": "xdk", "configurePreset": "xdk" }
+    { "name": "xdk", "configurePreset": "xdk" },
+    { "name": "xdk-wine", "configurePreset": "xdk-wine" }
   ]
 }
