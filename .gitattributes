@@ -1,0 +1,5 @@
+# The Wine wrappers and shell test scripts are executed under bash/WSL — force
+# LF so a Windows checkout (autocrlf) doesn't leave \r that breaks the shebang
+# and `set -u`/`if` parsing. The wrappers also carry the executable bit.
+*.sh            text eol=lf
+cmake/wine/*    text eol=lf
