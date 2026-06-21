@@ -21,6 +21,16 @@ else()
     # Linux/Wine: the wrappers translate Linux paths -> Wine Z:\ and run the
     # tool under wine. They read XEDK/WINEPREFIX from the build environment.
     set(_wine "${CMAKE_CURRENT_LIST_DIR}/wine")
+    # The wrappers are invoked directly by CMake/Ninja, so they must be
+    # executable. Git carries the bit on clone, but a project scaffolded on
+    # Windows (PowerShell Copy-Item) loses it — ensure it here at configure time.
+    file(CHMOD
+        "${_wine}/cl-wine" "${_wine}/link-wine"
+        "${_wine}/lib-wine" "${_wine}/imagexex-wine"
+        PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE)
     set(CMAKE_C_COMPILER   "${_wine}/cl-wine")
     set(CMAKE_CXX_COMPILER "${_wine}/cl-wine")
     set(CMAKE_AR           "${_wine}/lib-wine")
