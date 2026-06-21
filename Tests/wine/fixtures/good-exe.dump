@@ -1,0 +1,5 @@
+          1 module flags
+              title module
+   82000000 image base address
+   82010498 entry point
+   COMPRESSED, ENCRYPTED
